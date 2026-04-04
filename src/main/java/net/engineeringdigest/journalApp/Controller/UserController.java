@@ -1,6 +1,8 @@
 package net.engineeringdigest.journalApp.Controller;
 
 
+import net.engineeringdigest.journalApp.ApiResponse.WeatherRespose;
+import net.engineeringdigest.journalApp.service.WeatherService;
 import net.engineeringdigest.journalApp.Entity.User;
 import net.engineeringdigest.journalApp.repository.UserRepository;
 import net.engineeringdigest.journalApp.service.UserService;
@@ -23,10 +25,13 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping
-    public List<User> getAll(){
-        return userService.getAll();
-    }
+    @Autowired
+    private WeatherService weatherService;
+
+//    @GetMapping
+//    public List<User> getAll(){
+//        return userService.getAll();
+//    }
 
     @PutMapping
     public ResponseEntity<?> updateUser (@RequestBody User user){
@@ -46,6 +51,19 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         userRepository.deleteByUserName(authentication.getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping()
+    public ResponseEntity<?> greetings (){
+        System.out.println("hhhh");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getName());
+        WeatherRespose weatherResponse = weatherService.getWeather("Mumbai");
+        String greetings="";
+        if(weatherResponse!= null){
+            greetings = " weather feels like "+ weatherResponse.getCurrent().getFeelslike() ;
+        }
+        return new ResponseEntity<>("Hii "+ authentication.getName() + greetings, HttpStatus.OK);
     }
 
 
