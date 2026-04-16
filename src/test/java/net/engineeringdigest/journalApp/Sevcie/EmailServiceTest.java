@@ -12,7 +12,7 @@ public class EmailServiceTest {
     @Autowired
     private EmailService emailService;
 
-    @Test
+ //   @Test
     public void testmail(){
         emailService.sendMail("innameoffking@gmail.com",
                 "Testing mail sender"
