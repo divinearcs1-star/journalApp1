@@ -1,9 +1,11 @@
 package net.engineeringdigest.journalApp.Controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import net.engineeringdigest.journalApp.Entity.User;
 import net.engineeringdigest.journalApp.Utils.JwtUtil;
+import net.engineeringdigest.journalApp.dto.UserDTO;
 import net.engineeringdigest.journalApp.service.UserDetailsSeviceImpl;
 import net.engineeringdigest.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/public")
 @Slf4j
+@Tag( name = "Public APIs")
 public class PublicController {
 
     @Autowired
@@ -33,18 +36,31 @@ public class PublicController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/signUp")
-    public void signUp (@RequestBody User user){
+    @GetMapping("Health-check")
+    public String healthcheck(){
+        log.info("Health is ok!");
+        return "ok";
+    }
 
-        userService.saveNewUser(user);
+    @PostMapping("/signup")
+    public void signUp (@RequestBody UserDTO user){
+        User newUser = new User();
+        newUser.setEmail(user.getEmail());
+        newUser.setUserName(user.getUserName());
+        newUser.setPassWord(user.getPassWord());
+        newUser.setSentimentAnalysis(user.isSentimentAnalysis());
+        userService.saveNewUser(newUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login (@RequestBody User user){
+    public ResponseEntity<String> login (@RequestBody UserDTO user){
         try{
+            User newUser = new User();
+            newUser.setUserName(user.getUserName());
+            newUser.setPassWord(user.getPassWord());
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassWord()));
-            UserDetails userDetails = userDetailsSevice.loadUserByUsername(user.getUserName());
+                    new UsernamePasswordAuthenticationToken(newUser.getUserName(), newUser.getPassWord()));
+            UserDetails userDetails = userDetailsSevice.loadUserByUsername(newUser.getUserName());
             String jwt = jwtUtil.generateToken(userDetails.getUsername());
             return new ResponseEntity <>(jwt, HttpStatus.OK);
         }

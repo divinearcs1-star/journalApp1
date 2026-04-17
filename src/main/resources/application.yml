@@ -26,10 +26,14 @@ spring:
 
 server:
     port: ${SERVER_PORT}
-    servlet:
-      context-path: /journal
+#    servlet:
+ #     context-path: /journal
 
 weather:
   api:
     key: ${WEATHER_API}
+
+springdoc:
+  swagger-ui:
+    path: /docs
 

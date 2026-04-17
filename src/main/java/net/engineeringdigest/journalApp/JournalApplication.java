@@ -23,7 +23,7 @@ public class JournalApplication {
 
     @Bean
     public PlatformTransactionManager add (MongoDatabaseFactory dbfactory){
-        
+
         return  new MongoTransactionManager(dbfactory);
     }
 
